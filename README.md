@@ -12,6 +12,34 @@ The first and second APIs have the [same code base](./src/OpenTelemetryApi), but
 
 ## Running the project
 
+Inside [otel_django_app](./otel_django_app) type the following command:
+
+```bash
+python3 manage.py runserver
+```
+
+to run jaeger, type the following command:
+
+```bash
+docker run -d --name jaeger \
+  -e COLLECTOR_ZIPKIN_HOST_PORT=:9411 \
+  -p 5775:5775/udp \
+  -p 6831:6831/udp \
+  -p 6832:6832/udp \
+  -p 5778:5778 \
+  -p 16686:16686 \
+  -p 14268:14268 \
+  -p 14250:14250 \
+  -p 9411:9411 \
+  jaegertracing/all-in-one:1.24
+```
+
+to open jaeger dashboard, type the following command:
+
+```bash
+http://localhost:16686
+```
+
 Inside [src folder](./src), type the command below to up all containers (`first-api`, `second-api`, `worker`, `rabbit` and `zipkin`):
 
 ```bash
