@@ -18,6 +18,12 @@ To install dependencies, run:
 pipenv install
 ```
 
+To run zipkin, type the command bellow:
+
+```bash
+docker run -p 9411:9411 openzipkin/zipkin
+```
+
 First, active this project's virtualenv:
 
 ```bash
@@ -59,8 +65,6 @@ the `api` run on port 8000:
 ```bash
 http://127.0.0.1:8000/api/
 ```
-
-
 
 at home page, let the search field empty and type `RUN QUERY` to load all traces. Finally, click in your trace, then you'll see a diagram like this:
 
