@@ -1,0 +1,20 @@
+[[source]]
+url = "https://pypi.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[pipenv]
+allow_prereleases = true
+
+[packages]
+django = "*"
+requests = "*"
+opentelemetry-api = "==1.4.1"
+opentelemetry-sdk = "==1.4.1"
+opentelemetry-instrumentation-django = "==0.23b2"
+opentelemetry-exporter-zipkin = "==1.4.1"
+
+[dev-packages]
+
+[requires]
+python_version = "3.9"
