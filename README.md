@@ -1,69 +1,66 @@
 # Django Trace Context
 
-`work in progress`
+Simple client and django server to show how OpenTelemetry and trace context work.
 
-## Application architecture
+## Prerequisites
 
-The purpose is to propagate a message with `traceparent` id throw two api's and one worker using [W3C trace context](https://www.w3.org/TR/trace-context) standard. The `first-api` calls the `second-api` by a http call, on the other hand, the `second-api` has an asynchronous communication with the `worker` by a message broker (I chose [rabbitmq](https://www.rabbitmq.com/) for that). Furthermore, I chose [zipkin](https://zipkin.io/) as default APM tool, being responsible for get the application traces and build the distributed tracing diagram.
+- Python 3.9
 
-![Distributed Trace](doc/w3c-trace-context.png)
+- Pipenv
 
-The first and second APIs have the [same code base](./src/OpenTelemetryApi), but they're deployed in different containers.
+- Docker
 
 ## Running the project
 
-Inside [otel_django_app](./otel_django_app) type the following command:
+To install dependencies, run:
 
 ```bash
-python3 manage.py runserver
+pipenv install
 ```
 
-to run jaeger, type the following command:
+First, active this project's virtualenv:
 
 ```bash
-docker run -d --name jaeger \
-  -e COLLECTOR_ZIPKIN_HOST_PORT=:9411 \
-  -p 5775:5775/udp \
-  -p 6831:6831/udp \
-  -p 6832:6832/udp \
-  -p 5778:5778 \
-  -p 16686:16686 \
-  -p 14268:14268 \
-  -p 14250:14250 \
-  -p 9411:9411 \
-  jaegertracing/all-in-one:1.24
+pipenv shell
 ```
 
-to open jaeger dashboard, type the following command:
+Inside [otel_django_app](./otel_django_app) type the following command to run the `server`:
 
 ```bash
-http://localhost:16686
+python3 manage.py runserver --noreload
 ```
 
-Inside [src folder](./src), type the command below to up all containers (`first-api`, `second-api`, `worker`, `rabbit` and `zipkin`):
+Open another terminal tab and activate the project's virtualenv again:
 
 ```bash
-  docker-compose up
+pipenv shell
 ```
 
-wait for all containers get on and then send a request to the `first-api`:
+Inside [otel_django_app](./otel_django_app) type the following command to run the `client`:
 
 ```bash
-curl --request POST \
-  --url http://localhost:5000/WeatherForecast \
-  --header 'Content-Type: application/json' \
-  --header 'accept: */*' \
-  --data '{
-	"temperatureC": 10,
-	"summary": "Trace Test"
-}'
+python3 client.py
 ```
 
-the message that you sent above will travel throughout the flow (`first-api` > `second-api` >  `rabbit` > `worker`) along with the propagation fields (`traceparent` and `tracestate`). To see the generated distributed tracing diagram, access `zipkin` in your browser:
+to run zipkin, type the following command:
 
 ```bash
-  http://localhost:9411/
+docker run -p 9411:9411 openzipkin/zipkin
 ```
+
+to open zipkin dashboard, type the following command:
+
+```bash
+http://localhost:9411
+```
+
+the `api` run on port 8000:
+
+```bash
+http://127.0.0.1:8000/api/
+```
+
+
 
 at home page, let the search field empty and type `RUN QUERY` to load all traces. Finally, click in your trace, then you'll see a diagram like this:
 
